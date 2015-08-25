@@ -1,0 +1,367 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+
+<link rel="import" href="../paper-fab/paper-fab.html">
+<link rel="import" href="../paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+
+<link rel="import" href="../neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../neon-animation/animations/fade-in-animation.html">
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <fbv-calculator-modal></fbv-calculator-modal>
+
+@group Seed Elements
+@element fbv-calculator-modal
+@demo demo/index.html
+@hero hero.svg
+-->
+<dom-module id="fbv-calculator-modal">
+    
+    <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.min.css">
+
+  <style>
+      :host {
+          display: block;
+          box-sizing: border-box;
+          --paper-fab-background: #35950b;
+          --paper-tooltip-background: #333;
+          --paper-dialog-title: {
+              background-color: #35950b;
+              font-size: 20px;
+              color: white;
+              padding-top:10px;
+              padding-bottom:10px;
+              margin-top:0;
+              box-shadow: 0 1px 2px #555;
+          }
+      }
+      
+      #calculator{ 
+          width: 400px;
+          margin: 0;
+      }
+      
+     
+
+  </style>
+
+  <template>
+    <paper-fab id="calculator-fab" icon="filter-list" on-tap="openCalculator"></paper-fab>
+    <paper-tooltip id="calc-tooltip" for="calculator-fab">Abrir una calculadora en primer plano</paper-tooltip>
+    <paper-dialog id="calculator" modal entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+        <h2>Calculadora (Widget)</h2>
+        <div id="panel" class="container-fluid">
+            <div>
+               <div class="numbers col-xs-9">
+                   <div class="row">
+                       <paper-input label="{{labelView(temporalValue, commandPresent)}}" value="{{newValue}}"></paper-input>
+                   </div>
+                    <div class="row">
+                        <paper-button id="number1" raised on-tap="numberPressed">1</paper-button>
+                        <paper-button id="number2" raised on-tap="numberPressed">2</paper-button>
+                        <paper-button id="number3" raised on-tap="numberPressed">3</paper-button>
+                    </div>
+                    <div class="row">
+                        <paper-button id="number4" raised on-tap="numberPressed">4</paper-button>
+                        <paper-button id="number5" raised on-tap="numberPressed">5</paper-button>
+                        <paper-button id="number6" raised on-tap="numberPressed">6</paper-button>
+                    </div>
+                    <div class="row">
+                        <paper-button id="number7" raised on-tap="numberPressed">7</paper-button>
+                        <paper-button id="number8" raised on-tap="numberPressed">8</paper-button>
+                        <paper-button id="number9" raised on-tap="numberPressed">9</paper-button>
+                    </div>
+                    <div class="row">
+                        <paper-button id="number0" raised on-tap="numberPressed"> 0 </paper-button>
+                        <paper-button id="number10" raised on-tap="numberPressed"> . </paper-button>
+                    </div>
+                   </div>
+               <div id="commands" class="col-xs-3">
+                   <br>
+                    <paper-button id="command-plus" raised on-tap="commandPressed">+</paper-button>
+                    <paper-button id="command-minus" raised on-tap="commandPressed">-</paper-button>
+                    <paper-button id="command-times" raised on-tap="commandPressed">*</paper-button>
+                    <paper-button id="command-divide" raised on-tap="commandPressed">/</paper-button>
+                    <paper-button id="command-resultado" raised on-tap="commandResult">=</paper-button>
+               </div>
+            </div>
+        </div>
+        <div class="buttons">
+            <paper-button on-tap="clearAll">C</paper-button>
+            <paper-button on-tap="clearCurrent">CE</paper-button>
+            <paper-icon-button raised icon="done" dialog-confirm on-tap="confirmValue"></paper-icon-button>
+            <paper-icon-button icon="close" dialog-dismiss></paper-icon-button>
+        </div>
+    </paper-dialog>
+  </template>
+
+</dom-module>
+
+<script>
+
+  Polymer({
+
+    is: 'fbv-calculator-modal',
+
+    properties: {
+
+        newValue: {
+            type: String,
+            value: ''
+        },
+        
+        finalValue: {
+            type: Number,
+            value: 0,
+            notify: true
+        },
+        
+        temporalValue: {
+            type: Number,
+            value: 0
+        },
+        
+        dotPresent: {
+            type: Boolean,
+            value: false
+        },
+        
+        commandPresent: {
+            type: String, 
+            value: ''
+        }
+    },
+
+    // Element Lifecycle
+
+    ready: function() {
+      // `ready` is called after all elements have been configured, but
+      // propagates bottom-up. This element's children are ready, but parents
+      // are not.
+      //
+      // This is the point where you should make modifications to the DOM (when
+      // necessary), or kick off any processes the element wants to perform.
+    },
+
+    attached: function() {
+      // `attached` fires once the element and its parents have been inserted
+      // into a document.
+      //
+      // This is a good place to perform any work related to your element's
+      // visual state or active behavior (measuring sizes, beginning animations,
+      // loading resources, etc).
+    },
+
+    detached: function() {
+      // The analog to `attached`, `detached` fires when the element has been
+      // removed from a document.
+      //
+      // Use this to clean up anything you did in `attached`.
+    },
+
+    // Element Behavior
+    
+    /**
+    * This function is declared to assert that the element is well conected and ready to be tested and developed. 
+    */
+      
+    hello: function(){
+        return 'The calculator says hello!';
+    },
+      
+    
+    /**
+    * Function that opens the dialog calculator
+    */
+    openCalculator: function(){
+        this.$.calculator.open();
+        return true;
+    },
+      
+    labelView: function(a,b){
+        return a + " " + b;
+    },
+     
+      
+    /**
+    * This function saves the clicked number to the current value string
+    */
+      
+    numberPressed : function(event){
+        if(this.newValue === '' && event.target.outerText !== '.' && this.temporalValue === 0){
+            this.newValue = event.target.outerText;
+        } else if (this.newValue === '' && event.target.outerText !== '.' && this.temporalValue !== 0 && this.commandPresent === ''){
+            this.newValue = event.target.outerText;
+            this.temporalValue = 0;
+        } else if (event.target.outerText !== '.'){
+            this.newValue += event.target.outerText;
+        } else if (event.target.outerText === '.'){
+            if(!this.dotPresent){
+                this.newValue += event.target.outerText;
+                this.dotPresent = true;
+            }
+        } 
+        
+    }, 
+      
+    /**
+    * This function registers the pressing of a certain command and prepares the calculator for the next number to 
+    * be introduced.
+    */
+    commandPressed: function(event){
+        switch(event.target.outerText){
+            case '+':
+                if(this.newValue !== '' && this.temporalValue === 0){
+                    this.commandPresent = event.target.outerText;
+                    this.temporalValue = parseFloat(this.newValue);
+                    this.newValue = '';
+                    this.dotPresent = false;
+                } else if (this.commandPresent !== '' && this.newValue !== ''){
+                    var sumaTemp = this.evaluacionPrevia(this.newValue, this.temporalValue, this.commandPresent);
+                    this.refreshPanel(sumaTemp, event.target.outerText);
+                } else {
+                    this.commandPresent = event.target.outerText;
+                }
+                break;
+            case '-':
+                if(this.newValue !== '' && this.temporalValue === 0){
+                    this.commandPresent = event.target.outerText;
+                    this.temporalValue = parseFloat(this.newValue);
+                    this.newValue = '';
+                    this.dotPresent = false;
+                } else if (this.commandPresent !== '' && this.newValue !== ''){
+                    var sumaTemp = this.evaluacionPrevia(this.newValue, this.temporalValue, this.commandPresent);
+                    this.refreshPanel(sumaTemp, event.target.outerText);
+                } else {
+                    this.commandPresent = event.target.outerText;
+                }
+                break;
+            case '*':
+                if(this.newValue !== '' && this.temporalValue === 0){
+                    this.commandPresent = event.target.outerText;
+                    this.temporalValue = parseFloat(this.newValue);
+                    this.newValue = '';
+                    this.dotPresent = false;
+                } else if (this.commandPresent !== '' && this.newValue !== ''){
+                    var sumaTemp = this.evaluacionPrevia(this.newValue, this.temporalValue, this.commandPresent);
+                    this.refreshPanel(sumaTemp, event.target.outerText);
+                } else {
+                    this.commandPresent = event.target.outerText;
+                }
+                break;
+            case '/':
+                if(this.newValue !== '' && this.temporalValue === 0){
+                    this.commandPresent = event.target.outerText;
+                    this.temporalValue = parseFloat(this.newValue);
+                    this.newValue = '';
+                    this.dotPresent = false;
+                } else if (this.commandPresent !== '' && this.newValue !== ''){
+                    var sumaTemp = this.evaluacionPrevia(this.newValue, this.temporalValue, this.commandPresent);
+                    this.refreshPanel(sumaTemp, event.target.outerText);
+                } else {
+                    this.commandPresent = event.target.outerText;
+                }
+                break;
+        }
+    },
+      
+    evaluacionPrevia: function(nuevo, temporal, commando){
+        switch(commando){
+            case '+':
+                var tempA = parseFloat(nuevo);
+                return tempA + temporal;
+                break;
+            case '-':
+                var tempA = parseFloat(nuevo);
+                return temporal - tempA;
+                break;
+            case '*':
+                var tempA = parseFloat(nuevo);
+                return tempA*temporal;
+                break;
+            case '/':
+                var tempA = parseFloat(nuevo);
+                return temporal/tempA;
+                break;
+        }
+    },
+      
+    refreshPanel: function (sumaTemp, eventInfo) {
+                    this.newValue = '';
+                    this.temporalValue = sumaTemp;
+                    this.commandPresent = eventInfo;
+                    this.dotPresent = false;
+    },
+      
+    commandResult: function(event) {
+        if(this.newValue !== ''){
+            var sumaTemp = this.evaluacionPrevia(this.newValue, this.temporalValue, this.commandPresent);
+            this.newValue = '';
+            this.temporalValue = sumaTemp;
+            this.dotPresent = false;
+            this.commandPresent = '';
+        }
+    },
+      
+    clearAll: function(){
+        this.newValue = '';
+        this.temporalValue = 0;
+        this.commandPresent = '';
+        this.dotPresent = false;
+    },
+      
+    clearCurrent: function() {
+        this.newValue = '';
+        this.commandPresent = '';
+    },
+      
+    confirmValue: function(event) {
+        this.commandResult(event);
+        this.finalValue = this.temporalValue;
+        this.newValue = '';
+        this.dotPresent = false;
+        this.commandPresent = '';
+    },
+          
+    /**
+     * Sometimes it's just nice to say hi.
+     *
+     * @param {string} greeting A positive greeting.
+     * @return {string} The full greeting.
+     */
+    sayHello: function(greeting) {
+      var response = greeting || 'Hello World!';
+      return 'fbv-calculator-modal says, ' + response;
+    },
+
+    /**
+     * Attempts to destroy this element's enemies with an any beam of light!
+     *
+     * Or, at least, dispatches an event in the vain hope that someone else will
+     * do the zapping.
+     */
+    fireLasers: function() {
+      this.fire('fbv-calculator-modal-lasers', {sound: 'Pew pew!'});
+    }
+
+  });
+
+</script>
