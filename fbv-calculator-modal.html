@@ -173,12 +173,19 @@ Example:
     // Element Behavior
 
     /**
-    * This 'number-pressed' event is triggered when ever a number (or dot) from the pad is pressed.
+    * This `number-pressed` event is triggered when ever a number (or dot) from the pad is pressed.
     *
     * @event number-pressed
-    * @detail {{detail: numberClickEventDetails, _newValue: _newValueProperty}}
+    * @detail {{detail: numberClickEventDetails, newValue: _newValueProperty}}
     *
     **/
+      
+    /**
+    * This `equals-sign-pressed` event is triggered, as its' name suggests, when the equals sign button is pressed on the pad.
+    *
+    * @event equals-sign-pressed
+    * @detail {{detail: eventDetails, value: _temporalValueProperty}}
+    */
     
     /**
     * Function that opens the dialog calculator
