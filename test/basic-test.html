@@ -72,7 +72,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           
         test('Press a number, then a command, then another number and final the equals sign.', function(){
             myEl2.addEventListener('equals-sign-pressed', function(event){
-                assert.equal(event.detail.value, 50);
+                console.log(event.detail);
+                assert.equal(event.detail.value2, 50);
             });
             myEl2.$.number2.click();
             myEl2.$.commandtimes.click();

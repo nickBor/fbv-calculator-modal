@@ -153,6 +153,15 @@ Example:
             type: Number,
             value: 0
         },
+        
+        
+        /**
+        * Temporal STRING save of results throughout the calculations made.
+        */
+        _temporalValueString: {
+            type: String,
+            value: ''
+        },
         /**
         * Boolean variable used to track if a decimal point has been included in the input value.
         */
@@ -313,6 +322,8 @@ Example:
                 break;
         }
     },
+      
+    
     /**
     * Refresh the panel between chained commands.
     */
@@ -330,9 +341,10 @@ Example:
             this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
             this._newValue = '';
             this._temporalValue = this._sumaTemp;
+            this._temporalValueString = typeof this._newValue;
             this._dotPresent = false;
             this._commandPresent = '';
-            this.fire('equals-sign-pressed', {detail: event.detail, value: this._sumaTemp});
+            this.fire('equals-sign-pressed', {value: '50', value2: this._temporalValueString, detail: event.detail});
         }
     },
     /**
@@ -360,8 +372,8 @@ Example:
         this._newValue = '';
         this._dotPresent = false;
         this._commandPresent = '';
-    }
-
+    },
+      
   });
 
 </script>
