@@ -37,25 +37,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.equal(parseFloat(myEl.newValue), 2);
         });
         
-        test('Press a command', function(){
-            console.dir(myEl.$.commandplus);
-            myEl.$.commandplus.click();
-            assert.equal(myEl.commandPresent, '+');
-        });
-//
-//        test('says hello', function() {
-//          assert.equal(myEl.sayHello(), 'fbv-calculator-modal says, Hello World!');
-//
-//          var greetings = myEl.sayHello('greetings Earthlings');
-//          assert.equal(greetings, 'fbv-calculator-modal says, greetings Earthlings');
-//        });
-//
-//        test('fires lasers', function(done) {
-//          myEl.addEventListener('fbv-calculator-modal-lasers', function(event) {
-//            assert.equal(event.detail.sound, 'Pew pew!');
-//            done();
-//          });
-//          myEl.fireLasers();
+//        test('Press a command', function(done){
+//            console.log(myEl.newValue);
+//            myEl.$.commandplus.click();
+//            flush(function(){
+//                assert.equal(myEl.commandPresent, '+');
+//                done();
+//            });
 //        });
 
       });

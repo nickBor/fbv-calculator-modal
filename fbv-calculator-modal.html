@@ -25,7 +25,6 @@ Example:
 -->
 <dom-module id="fbv-calculator-modal">
     
-    <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.min.css">
 
   <style>
       :host {
@@ -45,8 +44,19 @@ Example:
       }
       
       #calculator{ 
-          width: 400px;
+          width: 450px;
+          min-width: 420px;
           margin: 0;
+      }
+      
+      .numbers{
+          width: 72%;
+          float: left;
+      }
+      
+      #commands{
+          width: 22%;
+          float: right;
       }
       
      
@@ -60,33 +70,33 @@ Example:
     <!--  Modal window: modal dialog. Presents the calculator's structure  -->
     <paper-dialog id="calculator" modal entry-animation="scale-up-animation" exit-animation="fade-out-animation">
         <h2>Calculadora (Widget)</h2>
-        <div id="panel" class="container-fluid">
+        <div id="panel">
             <div>
-               <div class="numbers col-xs-9">
+               <div class="numbers">
                    <div class="row">
                        <paper-input label="{{labelView(temporalValue, commandPresent)}}" value="{{newValue}}"></paper-input>
                    </div>
-                    <div class="row">
+                    <div>
                         <paper-button id="number1" raised on-tap="numberPressed">1</paper-button>
                         <paper-button id="number2" raised on-tap="numberPressed">2</paper-button>
                         <paper-button id="number3" raised on-tap="numberPressed">3</paper-button>
                     </div>
-                    <div class="row">
+                    <div>
                         <paper-button id="number4" raised on-tap="numberPressed">4</paper-button>
                         <paper-button id="number5" raised on-tap="numberPressed">5</paper-button>
                         <paper-button id="number6" raised on-tap="numberPressed">6</paper-button>
                     </div>
-                    <div class="row">
+                    <div>
                         <paper-button id="number7" raised on-tap="numberPressed">7</paper-button>
                         <paper-button id="number8" raised on-tap="numberPressed">8</paper-button>
                         <paper-button id="number9" raised on-tap="numberPressed">9</paper-button>
                     </div>
-                    <div class="row">
+                    <div>
                         <paper-button id="number0" raised on-tap="numberPressed"> 0 </paper-button>
                         <paper-button id="number10" raised on-tap="numberPressed"> . </paper-button>
                     </div>
                    </div>
-               <div id="commands" class="col-xs-3">
+               <div id="commands">
                    <br>
                     <paper-button id="commandplus" raised on-tap="commandPressed">+</paper-button>
                     <paper-button id="command-minus" raised on-tap="commandPressed">-</paper-button>
