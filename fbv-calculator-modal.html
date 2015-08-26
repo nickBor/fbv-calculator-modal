@@ -74,42 +74,42 @@ Example:
             <div>
                <div class="numbers">
                    <div class="row">
-                       <paper-input label="{{labelView(temporalValue, commandPresent)}}" value="{{newValue}}"></paper-input>
+                       <paper-input label="{{_labelView(_temporalValue, _commandPresent)}}" value="{{_newValue}}"></paper-input>
                    </div>
                     <div>
-                        <paper-button id="number1" name="1" raised on-tap="numberPressed">1</paper-button>
-                        <paper-button id="number2" name="2" raised on-tap="numberPressed">2</paper-button>
-                        <paper-button id="number3" name="3" raised on-tap="numberPressed">3</paper-button>
+                        <paper-button id="number1" raised on-tap="_numberPressed">1</paper-button>
+                        <paper-button id="number2" raised on-tap="_numberPressed">2</paper-button>
+                        <paper-button id="number3" raised on-tap="_numberPressed">3</paper-button>
                     </div>
                     <div>
-                        <paper-button id="number4" raised on-tap="numberPressed">4</paper-button>
-                        <paper-button id="number5" raised on-tap="numberPressed">5</paper-button>
-                        <paper-button id="number6" raised on-tap="numberPressed">6</paper-button>
+                        <paper-button id="number4" raised on-tap="_numberPressed">4</paper-button>
+                        <paper-button id="number5" raised on-tap="_numberPressed">5</paper-button>
+                        <paper-button id="number6" raised on-tap="_numberPressed">6</paper-button>
                     </div>
                     <div>
-                        <paper-button id="number7" raised on-tap="numberPressed">7</paper-button>
-                        <paper-button id="number8" raised on-tap="numberPressed">8</paper-button>
-                        <paper-button id="number9" raised on-tap="numberPressed">9</paper-button>
+                        <paper-button id="number7" raised on-tap="_numberPressed">7</paper-button>
+                        <paper-button id="number8" raised on-tap="_numberPressed">8</paper-button>
+                        <paper-button id="number9" raised on-tap="_numberPressed">9</paper-button>
                     </div>
                     <div>
-                        <paper-button id="number0" raised on-tap="numberPressed"> 0 </paper-button>
-                        <paper-button id="number10" raised on-tap="numberPressed"> . </paper-button>
+                        <paper-button id="number0" raised on-tap="_numberPressed"> 0 </paper-button>
+                        <paper-button id="number10" raised on-tap="_numberPressed"> . </paper-button>
                     </div>
                    </div>
                <div id="commands">
                    <br>
-                    <paper-button id="commandplus" raised on-tap="commandPressed">+</paper-button>
-                    <paper-button id="command-minus" raised on-tap="commandPressed">-</paper-button>
-                    <paper-button id="command-times" raised on-tap="commandPressed">*</paper-button>
-                    <paper-button id="command-divide" raised on-tap="commandPressed">/</paper-button>
-                    <paper-button id="command-resultado" raised on-tap="commandResult">=</paper-button>
+                    <paper-button id="commandplus" raised on-tap="_commandPressed">+</paper-button>
+                    <paper-button id="commandminus" raised on-tap="_commandPressed">-</paper-button>
+                    <paper-button id="commandtimes" raised on-tap="_commandPressed">*</paper-button>
+                    <paper-button id="commanddivide" raised on-tap="_commandPressed">/</paper-button>
+                    <paper-button id="commandresultado" raised on-tap="_commandResult">=</paper-button>
                </div>
             </div>
         </div>
         <div class="buttons">
-            <paper-button on-tap="clearAll">C</paper-button>
-            <paper-button on-tap="clearCurrent">CE</paper-button>
-            <paper-icon-button raised icon="done" dialog-confirm on-tap="confirmValue"></paper-icon-button>
+            <paper-button on-tap="_clearAll">C</paper-button>
+            <paper-button on-tap="_clearCurrent">CE</paper-button>
+            <paper-icon-button raised icon="done" dialog-confirm on-tap="_confirmValue"></paper-icon-button>
             <paper-icon-button icon="close" dialog-dismiss></paper-icon-button>
         </div>
     </paper-dialog>
@@ -124,10 +124,14 @@ Example:
     is: 'fbv-calculator-modal',
 
     properties: {
+        _sumaTemp: {
+            type: Number,
+            value: 0
+        },
         /**
         * Temporal save of the input value. Concatenated String
         */
-        newValue: {
+        _newValue: {
             type: String,
             value: ''
         },
@@ -145,14 +149,14 @@ Example:
         /**
         * Temporal save of results throughout the calculations made.
         */
-        temporalValue: {
+        _temporalValue: {
             type: Number,
             value: 0
         },
         /**
         * Boolean variable used to track if a decimal point has been included in the input value.
         */
-        dotPresent: {
+        _dotPresent: {
             type: Boolean,
             value: false
         },
@@ -160,49 +164,21 @@ Example:
         /**
         * Temporal save of the command expected to be run con the inputs.
         */
-        commandPresent: {
+        _commandPresent: {
             type: String, 
             value: ''
         }
     },
 
-    // Element Lifecycle
-
-    ready: function() {
-      // `ready` is called after all elements have been configured, but
-      // propagates bottom-up. This element's children are ready, but parents
-      // are not.
-      //
-      // This is the point where you should make modifications to the DOM (when
-      // necessary), or kick off any processes the element wants to perform.
-    },
-
-    attached: function() {
-      // `attached` fires once the element and its parents have been inserted
-      // into a document.
-      //
-      // This is a good place to perform any work related to your element's
-      // visual state or active behavior (measuring sizes, beginning animations,
-      // loading resources, etc).
-    },
-
-    detached: function() {
-      // The analog to `attached`, `detached` fires when the element has been
-      // removed from a document.
-      //
-      // Use this to clean up anything you did in `attached`.
-    },
-
     // Element Behavior
-    
+
     /**
-    * This function is declared to assert that the element is well conected and ready to be tested and developed. 
-    */
-      
-    hello: function(){
-        return 'The calculator says hello!';
-    },
-      
+    * This 'number-pressed' event is triggered when ever a number (or dot) from the pad is pressed.
+    *
+    * @event number-pressed
+    * @detail {{detail: numberClickEventDetails, _newValue: _newValueProperty}}
+    *
+    **/
     
     /**
     * Function that opens the dialog calculator
@@ -212,7 +188,7 @@ Example:
         return true;
     },
       
-    labelView: function(a,b){
+    _labelView: function(a,b){
         return a + " " + b;
     },
      
@@ -221,22 +197,22 @@ Example:
     * Function saves the clicked number to the new value string.
     */
       
-    numberPressed : function(event){
+    _numberPressed : function(event){
         
-        if(this.newValue === '' && event.target.outerText !== '.' && this.temporalValue === 0){
-            this.newValue = event.target.outerText;
-        } else if (this.newValue === '' && event.target.outerText !== '.' && this.temporalValue !== 0 && this.commandPresent === ''){
-            this.newValue = event.target.outerText;
-            this.temporalValue = 0;
+        if(this._newValue === '' && event.target.outerText !== '.' && this._temporalValue === 0){
+            this._newValue = event.target.outerText;
+        } else if (this._newValue === '' && event.target.outerText !== '.' && this._temporalValue !== 0 && this._commandPresent === ''){
+            this._newValue = event.target.outerText;
+            this._temporalValue = 0;
         } else if (event.target.outerText !== '.'){
-            this.newValue += event.target.outerText;
+            this._newValue += event.target.outerText;
         } else if (event.target.outerText === '.'){
-            if(!this.dotPresent){
-                this.newValue += event.target.outerText;
-                this.dotPresent = true;
+            if(!this._dotPresent){
+                this._newValue += event.target.outerText;
+                this._dotPresent = true;
             }
         }
-        this.fire('number-pressed',{detail: event.detail, newValue: this.newValue});
+        this.fire('number-pressed',{detail: event.detail, newValue: this._newValue});
         
     }, 
       
@@ -244,58 +220,58 @@ Example:
     * This function registers the pressing of a certain command and prepares the calculator for the next number to 
     * be introduced.
     */
-    commandPressed: function(event){
+    _commandPressed: function(event){
         switch(event.target.outerText){
             case '+':
-                if(this.newValue !== '' && this.temporalValue === 0){
-                    this.commandPresent = event.target.outerText;
-                    this.temporalValue = parseFloat(this.newValue);
-                    this.newValue = '';
-                    this.dotPresent = false;
-                } else if (this.commandPresent !== '' && this.newValue !== ''){
-                    var sumaTemp = this.evaluacionPrevia(this.newValue, this.temporalValue, this.commandPresent);
-                    this.refreshPanel(sumaTemp, event.target.outerText);
+                if(this._newValue !== '' && this._temporalValue === 0){
+                    this._commandPresent = event.target.outerText;
+                    this._temporalValue = parseFloat(this._newValue);
+                    this._newValue = '';
+                    this._dotPresent = false;
+                } else if (this._commandPresent !== '' && this._newValue !== ''){
+                    this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
+                    this._refreshPanel(this._sumaTemp, event.target.outerText);
                 } else {
-                    this.commandPresent = event.target.outerText;
+                    this._commandPresent = event.target.outerText;
                 }
                 break;
             case '-':
-                if(this.newValue !== '' && this.temporalValue === 0){
-                    this.commandPresent = event.target.outerText;
-                    this.temporalValue = parseFloat(this.newValue);
-                    this.newValue = '';
-                    this.dotPresent = false;
-                } else if (this.commandPresent !== '' && this.newValue !== ''){
-                    var sumaTemp = this.evaluacionPrevia(this.newValue, this.temporalValue, this.commandPresent);
-                    this.refreshPanel(sumaTemp, event.target.outerText);
+                if(this._newValue !== '' && this._temporalValue === 0){
+                    this._commandPresent = event.target.outerText;
+                    this._temporalValue = parseFloat(this._newValue);
+                    this._newValue = '';
+                    this._dotPresent = false;
+                } else if (this._commandPresent !== '' && this._newValue !== ''){
+                    this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
+                    this._refreshPanel(this._sumaTemp, event.target.outerText);
                 } else {
-                    this.commandPresent = event.target.outerText;
+                    this._commandPresent = event.target.outerText;
                 }
                 break;
             case '*':
-                if(this.newValue !== '' && this.temporalValue === 0){
-                    this.commandPresent = event.target.outerText;
-                    this.temporalValue = parseFloat(this.newValue);
-                    this.newValue = '';
-                    this.dotPresent = false;
-                } else if (this.commandPresent !== '' && this.newValue !== ''){
-                    var sumaTemp = this.evaluacionPrevia(this.newValue, this.temporalValue, this.commandPresent);
-                    this.refreshPanel(sumaTemp, event.target.outerText);
+                if(this._newValue !== '' && this._temporalValue === 0){
+                    this._commandPresent = event.target.outerText;
+                    this._temporalValue = parseFloat(this._newValue);
+                    this._newValue = '';
+                    this._dotPresent = false;
+                } else if (this._commandPresent !== '' && this._newValue !== ''){
+                    this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
+                    this._refreshPanel(this._sumaTemp, event.target.outerText);
                 } else {
-                    this.commandPresent = event.target.outerText;
+                    this._commandPresent = event.target.outerText;
                 }
                 break;
             case '/':
-                if(this.newValue !== '' && this.temporalValue === 0){
-                    this.commandPresent = event.target.outerText;
-                    this.temporalValue = parseFloat(this.newValue);
-                    this.newValue = '';
-                    this.dotPresent = false;
-                } else if (this.commandPresent !== '' && this.newValue !== ''){
-                    var sumaTemp = this.evaluacionPrevia(this.newValue, this.temporalValue, this.commandPresent);
-                    this.refreshPanel(sumaTemp, event.target.outerText);
+                if(this._newValue !== '' && this._temporalValue === 0){
+                    this._commandPresent = event.target.outerText;
+                    this._temporalValue = parseFloat(this._newValue);
+                    this._newValue = '';
+                    this._dotPresent = false;
+                } else if (this._commandPresent !== '' && this._newValue !== ''){
+                    this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
+                    this._refreshPanel(this._sumaTemp, event.target.outerText);
                 } else {
-                    this.commandPresent = event.target.outerText;
+                    this._commandPresent = event.target.outerText;
                 }
                 break;
         }
@@ -310,7 +286,7 @@ Example:
     *
     * commando @param Command expected to be run
     */
-    evaluacionPrevia: function(nuevo, temporal, commando){
+    _evaluacionPrevia: function(nuevo, temporal, commando){
         switch(commando){
             case '+':
                 var tempA = parseFloat(nuevo);
@@ -333,49 +309,50 @@ Example:
     /**
     * Refresh the panel between chained commands.
     */
-    refreshPanel: function (sumaTemp, eventInfo) {
-                    this.newValue = '';
-                    this.temporalValue = sumaTemp;
-                    this.commandPresent = eventInfo;
-                    this.dotPresent = false;
+    _refreshPanel: function (_sumaTemp, eventInfo) {
+                    this._newValue = '';
+                    this._temporalValue = _sumaTemp;
+                    this._commandPresent = eventInfo;
+                    this._dotPresent = false;
     },
     /**
     * Calculate a final result.
     */ 
-    commandResult: function(event) {
-        if(this.newValue !== ''){
-            var sumaTemp = this.evaluacionPrevia(this.newValue, this.temporalValue, this.commandPresent);
-            this.newValue = '';
-            this.temporalValue = sumaTemp;
-            this.dotPresent = false;
-            this.commandPresent = '';
+    _commandResult: function(event) {
+        if(this._newValue !== ''){
+            this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
+            this._newValue = '';
+            this._temporalValue = this._sumaTemp;
+            this._dotPresent = false;
+            this._commandPresent = '';
+            this.fire('equals-sign-pressed', {detail: event.detail, value: this._sumaTemp});
         }
     },
     /**
     * Clear calculator
     */
-    clearAll: function(){
-        this.newValue = '';
-        this.temporalValue = 0;
-        this.commandPresent = '';
-        this.dotPresent = false;
+    _clearAll: function(){
+        this._newValue = '';
+        this._temporalValue = 0;
+        this._commandPresent = '';
+        this._dotPresent = false;
     },
     /**
-    * Clear newValue and commandPresent
+    * Clear _newValue and _commandPresent
     */
-    clearCurrent: function() {
-        this.newValue = '';
-        this.commandPresent = '';
+    _clearCurrent: function() {
+        this._newValue = '';
+        this._commandPresent = '';
     },
     /**
     * Final confirmation. Closes the dialog and passes the final result to the notified property `final-value`
     */  
-    confirmValue: function(event) {
-        this.commandResult(event);
-        this.finalValue = this.temporalValue;
-        this.newValue = '';
-        this.dotPresent = false;
-        this.commandPresent = '';
+    _confirmValue: function(event) {
+        this._commandResult(event);
+        this.finalValue = this._temporalValue;
+        this._newValue = '';
+        this._dotPresent = false;
+        this._commandPresent = '';
     }
 
   });
