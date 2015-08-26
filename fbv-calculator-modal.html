@@ -77,9 +77,9 @@ Example:
                        <paper-input label="{{labelView(temporalValue, commandPresent)}}" value="{{newValue}}"></paper-input>
                    </div>
                     <div>
-                        <paper-button id="number1" raised on-tap="numberPressed">1</paper-button>
-                        <paper-button id="number2" raised on-tap="numberPressed">2</paper-button>
-                        <paper-button id="number3" raised on-tap="numberPressed">3</paper-button>
+                        <paper-button id="number1" name="1" raised on-tap="numberPressed">1</paper-button>
+                        <paper-button id="number2" name="2" raised on-tap="numberPressed">2</paper-button>
+                        <paper-button id="number3" name="3" raised on-tap="numberPressed">3</paper-button>
                     </div>
                     <div>
                         <paper-button id="number4" raised on-tap="numberPressed">4</paper-button>
@@ -222,6 +222,7 @@ Example:
     */
       
     numberPressed : function(event){
+        
         if(this.newValue === '' && event.target.outerText !== '.' && this.temporalValue === 0){
             this.newValue = event.target.outerText;
         } else if (this.newValue === '' && event.target.outerText !== '.' && this.temporalValue !== 0 && this.commandPresent === ''){
@@ -234,7 +235,8 @@ Example:
                 this.newValue += event.target.outerText;
                 this.dotPresent = true;
             }
-        } 
+        }
+        this.fire('number-pressed',{detail: event.detail, newValue: this.newValue});
         
     }, 
       
