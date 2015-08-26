@@ -26,11 +26,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <script>
       var myEl = document.querySelector('fbv-calculator-modal');
-
       suite('<fbv-calculator-modal>', function() {
 
         test('First test to check the element is there', function() {
           assert.equal(myEl.hello(), 'The calculator says hello!');
+        });
+          
+        test('Input a value into the newValue property', function(){
+            myEl.$.number2.click();
+            assert.equal(parseFloat(myEl.newValue), 2);
+        });
+        
+        test('Press a command', function(){
+            console.dir(myEl.$.commandplus);
+            myEl.$.commandplus.click();
+            assert.equal(myEl.commandPresent, '+');
         });
 //
 //        test('says hello', function() {

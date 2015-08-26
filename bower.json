@@ -2,9 +2,9 @@
   "name": "fbv-calculator-modal",
   "version": "1.0.1",
   "authors": [
-    "Anonymous <anonymous@example.com>"
+    "nickBor <fbordallo2@gmail.com>"
   ],
-  "description": "An element providing a solution to no problem in particular.",
+  "description": "Element which presents a FAB with which to toggle a Modal Calculator.",
   "keywords": [
     "web-component",
     "polymer",
@@ -12,7 +12,7 @@
   ],
   "main": "fbv-calculator-modal.html",
   "license": "http://polymer.github.io/LICENSE.txt",
-  "homepage": "https://github.com/<USERNAME>/seed-element/",
+  "homepage": "https://github.com/nickBor/fbv-calculator-modal/",
   "ignore": [
     "/.*",
     "/test/"

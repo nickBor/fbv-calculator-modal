@@ -4,5 +4,5 @@ Built on the Polymer Seed, for reusability, this element presents a modal calcul
 
 Example:
 ```html
-<fbv-calculator-modal value="{{value}}"></fbv-calculator-modal>
+<fbv-calculator-modal final-value="{{value}}"></fbv-calculator-modal>
 ```
