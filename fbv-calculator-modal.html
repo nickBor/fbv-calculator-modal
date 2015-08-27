@@ -54,7 +54,7 @@ Example:
           float: left;
       }
       
-      #commands{
+      .commands{
           width: 22%;
           float: right;
       }
@@ -73,7 +73,7 @@ Example:
         <div id="panel">
             <div>
                <div class="numbers">
-                   <div class="row">
+                   <div>
                        <paper-input label="{{_labelView(_temporalValue, _commandPresent)}}" value="{{_newValue}}"></paper-input>
                    </div>
                     <div>
@@ -92,16 +92,16 @@ Example:
                         <paper-button id="number9" raised on-tap="_numberPressed">9</paper-button>
                     </div>
                     <div>
-                        <paper-button id="number0" raised on-tap="_numberPressed"> 0 </paper-button>
-                        <paper-button id="number10" raised on-tap="_numberPressed"> . </paper-button>
+                        <paper-button id="number0" raised on-tap="_numberPressed">0</paper-button>
+                        <paper-button id="number10" raised on-tap="_numberPressed">.</paper-button>
                     </div>
                    </div>
-               <div id="commands">
+               <div class="commands">
                    <br>
                     <paper-button id="commandplus" raised on-tap="_commandPressed">+</paper-button>
                     <paper-button id="commandminus" raised on-tap="_commandPressed">-</paper-button>
-                    <paper-button id="commandtimes" raised on-tap="_commandPressed">*</paper-button>
-                    <paper-button id="commanddivide" raised on-tap="_commandPressed">/</paper-button>
+                    <paper-button id="commandmulti" raised on-tap="_commandPressed">*</paper-button>
+                    <paper-button id="commanddivision" raised on-tap="_commandPressed">/</paper-button>
                     <paper-button id="commandresultado" raised on-tap="_commandResult">=</paper-button>
                </div>
             </div>
@@ -156,13 +156,6 @@ Example:
         
         
         /**
-        * Temporal STRING save of results throughout the calculations made.
-        */
-        _temporalValueString: {
-            type: String,
-            value: ''
-        },
-        /**
         * Boolean variable used to track if a decimal point has been included in the input value.
         */
         _dotPresent: {
@@ -176,6 +169,21 @@ Example:
         _commandPresent: {
             type: String, 
             value: ''
+        },
+        
+        /**
+        * Boolean value used to execute the calculation of _temporalValueString
+        */
+        _stringTrigger:{
+            type: Boolean,
+            value: false
+        },
+        /**
+        * Temporal STRING save of results throughout the calculations made.
+        */
+        _temporalValueString: {
+            type: String,
+            computed: '_evaluacionEqualsString(_newValue, _temporalValue, _commandPresent, _stringTrigger)'
         }
     },
 
@@ -237,11 +245,11 @@ Example:
     * be introduced.
     */
     _commandPressed: function(event){
-        switch(event.target.outerText){
+        switch(event.target.outerText.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,"")){
             case '+':
                 if(this._newValue !== '' && this._temporalValue === 0){
                     this._commandPresent = event.target.outerText;
-                    this._temporalValue = parseFloat(this._newValue);
+                    this._temporalValue = parseFloat(this._newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""));
                     this._newValue = '';
                     this._dotPresent = false;
                 } else if (this._commandPresent !== '' && this._newValue !== ''){
@@ -254,7 +262,7 @@ Example:
             case '-':
                 if(this._newValue !== '' && this._temporalValue === 0){
                     this._commandPresent = event.target.outerText;
-                    this._temporalValue = parseFloat(this._newValue);
+                    this._temporalValue = parseFloat(this._newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""));
                     this._newValue = '';
                     this._dotPresent = false;
                 } else if (this._commandPresent !== '' && this._newValue !== ''){
@@ -267,7 +275,7 @@ Example:
             case '*':
                 if(this._newValue !== '' && this._temporalValue === 0){
                     this._commandPresent = event.target.outerText;
-                    this._temporalValue = parseFloat(this._newValue);
+                    this._temporalValue = parseFloat(this._newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""));
                     this._newValue = '';
                     this._dotPresent = false;
                 } else if (this._commandPresent !== '' && this._newValue !== ''){
@@ -280,7 +288,7 @@ Example:
             case '/':
                 if(this._newValue !== '' && this._temporalValue === 0){
                     this._commandPresent = event.target.outerText;
-                    this._temporalValue = parseFloat(this._newValue);
+                    this._temporalValue = parseFloat(this._newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""));
                     this._newValue = '';
                     this._dotPresent = false;
                 } else if (this._commandPresent !== '' && this._newValue !== ''){
@@ -303,7 +311,7 @@ Example:
     * commando @param Command expected to be run
     */
     _evaluacionPrevia: function(nuevo, temporal, commando){
-        switch(commando){
+        switch(commando.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,"")){
             case '+':
                 var tempA = parseFloat(nuevo);
                 return tempA + temporal;
@@ -323,6 +331,51 @@ Example:
         }
     },
       
+    /**
+    * Converts the final wanted value into a String.
+    *
+    * nuevo @param Latest value input
+    *
+    * temporal @param Temporally saved value (intermediate result)
+    *
+    * commando @param Command expected to be run
+    *
+    * trigger @param Boolean used to enter or not the calculation Switch
+    */
+    _evaluacionEqualsString: function(nuevo, temporal, commando, trigger){
+        if(trigger){
+            switch(commando.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,"")){
+                case '+':
+                    var tempA = parseFloat(nuevo);
+                    var tempNum = tempA + temporal;
+                    tempNum += '';
+                    return tempNum;
+                    break;
+                case '-':
+                    var tempA = parseFloat(nuevo);
+                    var tempNum = temporal - tempA;
+                    tempNum += '';
+                    return tempNum;
+                    break;
+                case '*':
+                    var tempA = parseFloat(nuevo);
+                    var tempNum = tempA*temporal;
+                    tempNum += '';
+                    return tempNum;
+                    break;
+                case '/':
+                    var tempA = parseFloat(nuevo);
+                    var tempNum = temporal/tempA;
+                    tempNum += '';
+                    return tempNum;
+                    break;
+            }
+        } else {
+            var emptyString = '';
+            return emptyString;
+        }
+    },
+      
     
     /**
     * Refresh the panel between chained commands.
@@ -338,13 +391,14 @@ Example:
     */ 
     _commandResult: function(event) {
         if(this._newValue !== ''){
+            this._stringTrigger = true;
             this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
+            this.fire('equals-sign-pressed', {value: this._temporalValueString, detail: event.detail});
             this._newValue = '';
             this._temporalValue = this._sumaTemp;
             this._temporalValueString = typeof this._newValue;
             this._dotPresent = false;
             this._commandPresent = '';
-            this.fire('equals-sign-pressed', {value: '50', value2: this._temporalValueString, detail: event.detail});
         }
     },
     /**
