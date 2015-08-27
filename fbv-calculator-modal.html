@@ -18,6 +18,8 @@ Built on the Polymer Seed, for reusability, this element presents a modal calcul
 Example:
 
     <fbv-calculator-modal final-value="{{}}"></fbv-calculator-modal>
+    
+Final value returned rounded to 2 decimal places.
 
 @group Seed Elements
 @element fbv-calculator-modal
@@ -66,10 +68,10 @@ Example:
   <template>
     <!-- FAB toggles Modal  -->
     <paper-fab id="calculator-fab" icon="filter-list" on-tap="openCalculator"></paper-fab>
-    <paper-tooltip id="calc-tooltip" for="calculator-fab">Abrir una calculadora en primer plano</paper-tooltip>
+    <paper-tooltip id="calc-tooltip" for="calculator-fab">Abrir calc.</paper-tooltip>
     <!--  Modal window: modal dialog. Presents the calculator's structure  -->
     <paper-dialog id="calculator" modal entry-animation="scale-up-animation" exit-animation="fade-out-animation">
-        <h2>Calculadora (Widget)</h2>
+        <h2>Calculadora</h2>
         <div id="panel">
             <div>
                <div class="numbers">
@@ -212,6 +214,10 @@ Example:
         return true;
     },
       
+    /**
+    * Function that combines the temporal value with the command pressed into a readable String.
+    */
+      
     _labelView: function(a,b){
         return a + " " + b;
     },
@@ -222,17 +228,17 @@ Example:
     */
       
     _numberPressed : function(event){
-        
+        var regEx = /(\r\n|\n|\r|\s)/gm;
         if(this._newValue === '' && event.target.outerText !== '.' && this._temporalValue === 0){
-            this._newValue = event.target.outerText;
+            this._newValue = event.target.outerText.replace(regEx,"");
         } else if (this._newValue === '' && event.target.outerText !== '.' && this._temporalValue !== 0 && this._commandPresent === ''){
-            this._newValue = event.target.outerText;
+            this._newValue = event.target.outerText.replace(regEx,"");
             this._temporalValue = 0;
         } else if (event.target.outerText !== '.'){
-            this._newValue += event.target.outerText;
+            this._newValue += event.target.outerText.replace(regEx,"");
         } else if (event.target.outerText === '.'){
             if(!this._dotPresent){
-                this._newValue += event.target.outerText;
+                this._newValue += event.target.outerText.replace(regEx,"");
                 this._dotPresent = true;
             }
         }
@@ -245,11 +251,12 @@ Example:
     * be introduced.
     */
     _commandPressed: function(event){
-        switch(event.target.outerText.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,"")){
+        var regEx = /(\r\n|\n|\r|\s)/gm;
+        switch(event.target.outerText.replace(regEx,"")){
             case '+':
                 if(this._newValue !== '' && this._temporalValue === 0){
                     this._commandPresent = event.target.outerText;
-                    this._temporalValue = parseFloat(this._newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""));
+                    this._temporalValue = parseFloat(this._newValue.replace(regEx,""));
                     this._newValue = '';
                     this._dotPresent = false;
                 } else if (this._commandPresent !== '' && this._newValue !== ''){
@@ -262,7 +269,7 @@ Example:
             case '-':
                 if(this._newValue !== '' && this._temporalValue === 0){
                     this._commandPresent = event.target.outerText;
-                    this._temporalValue = parseFloat(this._newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""));
+                    this._temporalValue = parseFloat(this._newValue.replace(regEx,""));
                     this._newValue = '';
                     this._dotPresent = false;
                 } else if (this._commandPresent !== '' && this._newValue !== ''){
@@ -275,7 +282,7 @@ Example:
             case '*':
                 if(this._newValue !== '' && this._temporalValue === 0){
                     this._commandPresent = event.target.outerText;
-                    this._temporalValue = parseFloat(this._newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""));
+                    this._temporalValue = parseFloat(this._newValue.replace(regEx,""));
                     this._newValue = '';
                     this._dotPresent = false;
                 } else if (this._commandPresent !== '' && this._newValue !== ''){
@@ -288,7 +295,7 @@ Example:
             case '/':
                 if(this._newValue !== '' && this._temporalValue === 0){
                     this._commandPresent = event.target.outerText;
-                    this._temporalValue = parseFloat(this._newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""));
+                    this._temporalValue = parseFloat(this._newValue.replace(regEx,""));
                     this._newValue = '';
                     this._dotPresent = false;
                 } else if (this._commandPresent !== '' && this._newValue !== ''){
@@ -311,7 +318,7 @@ Example:
     * commando @param Command expected to be run
     */
     _evaluacionPrevia: function(nuevo, temporal, commando){
-        switch(commando.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,"")){
+        switch(commando.replace(/(\r\n|\n|\r|\s)/gm,"")){
             case '+':
                 var tempA = parseFloat(nuevo);
                 return tempA + temporal;
@@ -344,7 +351,7 @@ Example:
     */
     _evaluacionEqualsString: function(nuevo, temporal, commando, trigger){
         if(trigger){
-            switch(commando.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,"")){
+            switch(commando.replace(/(\r\n|\n|\r|\s)/gm,"")){
                 case '+':
                     var tempA = parseFloat(nuevo);
                     var tempNum = tempA + temporal;
@@ -399,6 +406,7 @@ Example:
             this._temporalValueString = typeof this._newValue;
             this._dotPresent = false;
             this._commandPresent = '';
+            this._stringTrigger = false;
         }
     },
     /**
@@ -422,7 +430,7 @@ Example:
     */  
     _confirmValue: function(event) {
         this._commandResult(event);
-        this.finalValue = this._temporalValue;
+        this.finalValue = Math.round(this._temporalValue * 100) / 100;
         this._newValue = '';
         this._dotPresent = false;
         this._commandPresent = '';

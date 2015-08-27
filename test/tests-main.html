@@ -16,64 +16,64 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
 
-    <!-- Step 1: import the element to test -->
+    <!-- import element/s -->
     <link rel="import" href="../fbv-calculator-modal.html">
   </head>
   <body>
 
-    <!-- You can use the document as a place to set up your fixtures. -->
+    <!-- set up fixtures -->
     <fbv-calculator-modal id="fixture1"></fbv-calculator-modal>
     <fbv-calculator-modal id="fixture2"></fbv-calculator-modal>
 
     <script>
+      // Save element selections
       var myEl = document.querySelector('#fixture1');
       var myEl2 = document.querySelector('#fixture2');
-      var count = 0;
         
-      suite('Testing the number pad:', function() {
-          
+        //Initialize Main Suite
+        
+      suite('Testing the calculator:', function() {
+          // Setup runs before every test.
         setup(function(){
             myEl._clearAll();
-            console.log('Reset element: myEl.');
+            myEl2._clearAll();
         });
 
-          
+          // First test: check for a click on the number pad
         test('Input a value into the _newValue property', function(){
+            //Click called on number 2
             myEl.$.number2.click();
-            assert.equal(myEl._newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""), '2');
+            assert.equal(myEl._newValue, '2');
         });
         
+          // Second test: check for values saved on multiple clicks on the number pad
         test('Pressing a combination of numbers', function(){
             
-            
-            myEl.addEventListener('number-pressed', function(event){
-                if(count === 0){
-                    assert.equal(event.detail.newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""), 2);
-//                    console.log('Step1');
-                } else if (count === 1){
-                    assert.equal(event.detail.newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""), 25);
-//                    console.log('Step2');
-                } else if (count === 2){
-                    assert.equal(event.detail.newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""), 25);
-//                    console.log('Step3');
-                } else if (count === 3){
-                    assert.equal(event.detail.newValue.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,""), 25.8);
-//                    console.log('Step4');
-                }
-            });
+            // Apply clicks and run assertions along the process
+            // Number button IDs are: number+<number_pressed>. Eg. Button 1 = number1
+            // The DOT button is ID: number10
             myEl.$.number2.click();
-            count+=1;
+            assert.equal(myEl._newValue, 2);
             myEl.$.number5.click();
-            count+=1;
+            assert.equal(myEl._newValue, 25);
             myEl.$.number10.click(); 
-            count+=1;
+            assert.equal(myEl._newValue, 25);
             myEl.$.number8.click();
+            assert.equal(myEl._newValue, 25.8);
         });
           
+          // Third test: looks for the correct flow of data through a simple 'one-command' operation.
+          // This is: number entered, command pressed, second number entered, equals sign pressed.
+          
         test('Press a number, then a command, then another number and final the equals sign.', function(){
+            // Add event listener to our element to listen for the equals-sign-pressed event.
+            // We recieve an event.detail object as such: {detail: eventDetails, value: finalValueCalculated}
             myEl2.addEventListener('equals-sign-pressed', function(event){
                 assert.equal(event.detail.value, 125.5);
             });
+            // Apply clicks
+            // Command button IDS are: command + action. Action being: plus, minus, multi, division, resultado.
+            // For example: Result button has and ID = 'commandresultado'
             myEl2.$.number2.click();
             myEl2.$.number5.click();
             myEl2.$.number10.click();
@@ -81,7 +81,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             myEl2.$.commandmulti.click();
             myEl2.$.number5.click();
             myEl2.$.commandresultado.click();
-            myEl2._stringTrigger = false;
         });
 
 
