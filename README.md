@@ -13,7 +13,7 @@ Run:
 
 `bower install nickBor/fbv-calculator-modal`
 
-to download the element into your bower dependencies folder. The import `fbv-calculator-modal.html` into your project, elements folder or custom element, as you would with any other polymer element.
+to download the element into your bower dependencies folder. Then import `fbv-calculator-modal.html` into your project, elements folder or custom element, as you would with any other polymer element.
 
 To save the dependency to the bower.json file, run:
 
