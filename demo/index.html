@@ -22,9 +22,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <body unresolved>
       <template is="dom-bind">
        <div style="padding:50px">
+          <div class="horizontal layout">
+           <input type="number" value="{{value}}">
             <fbv-calculator-modal final-value="{{value}}">
+                <button>Calculator</button>
             </fbv-calculator-modal>
-            The value recieved: <span>{{value}}</span>
+          </div>
        </div>
           
     </template>

@@ -24,19 +24,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- set up fixtures -->
     <fbv-calculator-modal id="fixture1"></fbv-calculator-modal>
     <fbv-calculator-modal id="fixture2"></fbv-calculator-modal>
+    <fbv-calculator-modal id="fixture3"></fbv-calculator-modal>
 
     <script>
       // Save element selections
       var myEl = document.querySelector('#fixture1');
       var myEl2 = document.querySelector('#fixture2');
+      var myEl3 = document.querySelector('#fixture3');
         
         //Initialize Main Suite
         
       suite('Testing the calculator:', function() {
           // Setup runs before every test.
         setup(function(){
-            myEl._clearAll();
-            myEl2._clearAll();
         });
 
           // First test: check for a click on the number pad
@@ -44,14 +44,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             //Click called on number 2
             myEl.$.number2.click();
             assert.equal(myEl._newValue, '2');
+            myEl._clearAll();
         });
-        
+            
+            // 25.8
           // Second test: check for values saved on multiple clicks on the number pad
         test('Pressing a combination of numbers', function(){
             
             // Apply clicks and run assertions along the process
             // Number button IDs are: number+<number_pressed>. Eg. Button 1 = number1
             // The DOT button is ID: number10
+            // 25.8
             myEl.$.number2.click();
             assert.equal(myEl._newValue, 2);
             myEl.$.number5.click();
@@ -65,7 +68,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           // Third test: looks for the correct flow of data through a simple 'one-command' operation.
           // This is: number entered, command pressed, second number entered, equals sign pressed.
           
-        test('Press a number, then a command, then another number and final the equals sign.', function(){
+            // 25.1 * 5 = 125.5
+        test('Press a number, then a command, then another number and finally the equals sign.', function(){
             // Add event listener to our element to listen for the equals-sign-pressed event.
             // We recieve an event.detail object as such: {detail: eventDetails, value: finalValueCalculated}
             myEl2.addEventListener('equals-sign-pressed', function(event){
@@ -74,6 +78,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             // Apply clicks
             // Command button IDS are: command + action. Action being: plus, minus, multi, division, resultado.
             // For example: Result button has and ID = 'commandresultado'
+            // 25.1 * 5 = 125.5
             myEl2.$.number2.click();
             myEl2.$.number5.click();
             myEl2.$.number10.click();
@@ -81,6 +86,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             myEl2.$.commandmulti.click();
             myEl2.$.number5.click();
             myEl2.$.commandresultado.click();
+        });
+          
+            // 12.5 * 2 + 25 + = 50
+        test('Press a number, then a command a repeat before pressing equals.', function(){
+            // Add event listener to our element to listen for the equals-sign-pressed event.
+            // We recieve an event.detail object as such: {detail: eventDetails, value: finalValueCalculated}
+            myEl3.addEventListener('equals-sign-pressed', function(event){
+                assert.equal(event.detail.value, 50);
+            });
+            // Apply clicks
+            // Command button IDS are: command + action. Action being: plus, minus, multi, division, resultado.
+            // For example: Result button has and ID = 'commandresultado'
+            // 12.5 * 2 + 25 + = 50
+            myEl3.$.number1.click();
+            myEl3.$.number2.click();
+            myEl3.$.number10.click();
+            myEl3.$.number5.click();
+            myEl3.$.commandmulti.click();
+            myEl3.$.number2.click();
+            myEl3.$.commandplus.click();
+            myEl3.$.number2.click();
+            myEl3.$.number5.click();
+            myEl3.$.commandplus.click();
+            myEl3.$.commandresultado.click();
         });
 
 

@@ -4,7 +4,12 @@ Built on the Polymer Seed, for reusability, this element presents a modal calcul
 
 Example:
 ```html
-<fbv-calculator-modal final-value="{{value}}"></fbv-calculator-modal>
+<fbv-calculator-modal final-value="{{value}}">
+    // An insertion point is created, which responds to tap/click, where you can place a button,
+    // word, icon, ... in order to open the calculator dialog
+    // eg. button
+    <paper-icon-button icon="remove"></paper-icon-button>
+</fbv-calculator-modal>
 ```
 
 ## Install with Bower

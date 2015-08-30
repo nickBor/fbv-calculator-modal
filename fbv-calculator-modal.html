@@ -17,9 +17,11 @@ Built on the Polymer Seed, for reusability, this element presents a modal calcul
 
 Example:
 
-    <fbv-calculator-modal final-value="{{}}"></fbv-calculator-modal>
+    <fbv-calculator-modal final-value="{{value}}">
+        <paper-icon-button icon="foo"></paper-icon-button>
+    </fbv-calculator-modal>
     
-Final value returned rounded to 2 decimal places.
+Final value returned rounded to 2 decimal places.An insertion point is created, which responds to tap/click, where you can place a button,word, icon, ... in order to open the calculator dialog. Eg. button
 
 @group Seed Elements
 @element fbv-calculator-modal
@@ -32,8 +34,6 @@ Final value returned rounded to 2 decimal places.
       :host {
           display: block;
           box-sizing: border-box;
-          --paper-fab-background: #35950b;
-          --paper-tooltip-background: #333;
           --paper-dialog-title: {
               background-color: #35950b;
               font-size: 20px;
@@ -67,8 +67,9 @@ Final value returned rounded to 2 decimal places.
 
   <template>
     <!-- FAB toggles Modal  -->
-    <paper-fab id="calculator-fab" icon="filter-list" on-tap="openCalculator"></paper-fab>
-    <paper-tooltip id="calc-tooltip" for="calculator-fab">Abrir calc.</paper-tooltip>
+    <div id="calculator-fab" on-tap="openCalculator">
+        <content></content>
+    </div>
     <!--  Modal window: modal dialog. Presents the calculator's structure  -->
     <paper-dialog id="calculator" modal entry-animation="scale-up-animation" exit-animation="fade-out-animation">
         <h2>Calculadora</h2>
