@@ -12,6 +12,10 @@ Example:
 </fbv-calculator-modal>
 ```
 
+## Demo Page
+
+Visit http://nickBor.github.io/fbv-calculator-modal to demo the element.
+
 ## Install with Bower
 
 Run:
