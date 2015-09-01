@@ -1,0 +1,442 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+
+<link rel="import" href="../paper-fab/paper-fab.html">
+<link rel="import" href="../paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+
+<link rel="import" href="../neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../neon-animation/animations/fade-in-animation.html">
+
+<!--
+Built on the Polymer Seed, for reusability, this element presents a modal calculator display. `fbv-calculator-modal` is as simple to include in your project as any other polymer element. Capabable of: addition, subtraction, multiplication and division. Returns a value to the parent, accesible through the 'final-value' property.
+
+Example:
+
+    <fbv-calculator-modal final-value="{{value}}">
+        <paper-icon-button icon="foo"></paper-icon-button>
+    </fbv-calculator-modal>
+    
+Final value returned rounded to 2 decimal places.An insertion point is created, which responds to tap/click, where you can place a button,word, icon, ... in order to open the calculator dialog. Eg. button
+
+@group Seed Elements
+@element fbv-calculator-modal
+@demo demo/index.html
+-->
+<dom-module id="fbv-calculator-modal">
+    
+
+  <style>
+      :host {
+          display: block;
+          box-sizing: border-box;
+          --paper-dialog-title: {
+              background-color: #35950b;
+              font-size: 20px;
+              color: white;
+              padding-top:10px;
+              padding-bottom:10px;
+              margin-top:0;
+              box-shadow: 0 1px 2px #555;
+          }
+      }
+      
+      #calculator{ 
+          width: 450px;
+          min-width: 420px;
+          margin: 0;
+      }
+      
+      .numbers{
+          width: 72%;
+          float: left;
+      }
+      
+      .commands{
+          width: 22%;
+          float: right;
+      }
+      
+     
+
+  </style>
+
+  <template>
+    <!-- FAB toggles Modal  -->
+    <div id="calculator-fab" on-tap="openCalculator">
+        <content></content>
+    </div>
+    <!--  Modal window: modal dialog. Presents the calculator's structure  -->
+    <paper-dialog id="calculator" modal entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+        <h2>Calculadora</h2>
+        <div id="panel">
+            <div>
+               <div class="numbers">
+                   <div>
+                       <paper-input label="{{_labelView(_temporalValue, _commandPresent)}}" value="{{_newValue}}"></paper-input>
+                   </div>
+                    <div>
+                        <paper-button id="number1" raised on-tap="_numberPressed">1</paper-button>
+                        <paper-button id="number2" raised on-tap="_numberPressed">2</paper-button>
+                        <paper-button id="number3" raised on-tap="_numberPressed">3</paper-button>
+                    </div>
+                    <div>
+                        <paper-button id="number4" raised on-tap="_numberPressed">4</paper-button>
+                        <paper-button id="number5" raised on-tap="_numberPressed">5</paper-button>
+                        <paper-button id="number6" raised on-tap="_numberPressed">6</paper-button>
+                    </div>
+                    <div>
+                        <paper-button id="number7" raised on-tap="_numberPressed">7</paper-button>
+                        <paper-button id="number8" raised on-tap="_numberPressed">8</paper-button>
+                        <paper-button id="number9" raised on-tap="_numberPressed">9</paper-button>
+                    </div>
+                    <div>
+                        <paper-button id="number0" raised on-tap="_numberPressed">0</paper-button>
+                        <paper-button id="number10" raised on-tap="_numberPressed">.</paper-button>
+                    </div>
+                   </div>
+               <div class="commands">
+                   <br>
+                    <paper-button id="commandplus" raised on-tap="_commandPressed">+</paper-button>
+                    <paper-button id="commandminus" raised on-tap="_commandPressed">-</paper-button>
+                    <paper-button id="commandmulti" raised on-tap="_commandPressed">*</paper-button>
+                    <paper-button id="commanddivision" raised on-tap="_commandPressed">/</paper-button>
+                    <paper-button id="commandresultado" raised on-tap="_commandResult">=</paper-button>
+               </div>
+            </div>
+        </div>
+        <div class="buttons">
+            <paper-button on-tap="_clearAll">C</paper-button>
+            <paper-button on-tap="_clearCurrent">CE</paper-button>
+            <paper-icon-button raised icon="done" dialog-confirm on-tap="_confirmValue"></paper-icon-button>
+            <paper-icon-button icon="close" dialog-dismiss></paper-icon-button>
+        </div>
+    </paper-dialog>
+  </template>
+
+</dom-module>
+
+<script>
+
+  Polymer({
+
+    is: 'fbv-calculator-modal',
+
+    properties: {
+        _sumaTemp: {
+            type: Number,
+            value: 0
+        },
+        /**
+        * Temporal save of the input value. Concatenated String
+        */
+        _newValue: {
+            type: String,
+            value: ''
+        },
+        
+        /**
+        * Bound property which returns to the parent element the final value calculated.
+        */
+        
+        finalValue: {
+            type: Number,
+            value: 0,
+            notify: true
+        },
+        
+        /**
+        * Temporal save of results throughout the calculations made.
+        */
+        _temporalValue: {
+            type: Number,
+            value: 0
+        },
+        
+        
+        /**
+        * Boolean variable used to track if a decimal point has been included in the input value.
+        */
+        _dotPresent: {
+            type: Boolean,
+            value: false
+        },
+        
+        /**
+        * Temporal save of the command expected to be run con the inputs.
+        */
+        _commandPresent: {
+            type: String, 
+            value: ''
+        },
+        
+        /**
+        * Boolean value used to execute the calculation of _temporalValueString
+        */
+        _stringTrigger:{
+            type: Boolean,
+            value: false
+        },
+        /**
+        * Temporal STRING save of results throughout the calculations made.
+        */
+        _temporalValueString: {
+            type: String,
+            computed: '_evaluacionEqualsString(_newValue, _temporalValue, _commandPresent, _stringTrigger)'
+        }
+    },
+
+    // Element Behavior
+
+    /**
+    * This `number-pressed` event is triggered when ever a number (or dot) from the pad is pressed.
+    *
+    * @event number-pressed
+    * @detail {{detail: numberClickEventDetails, newValue: _newValueProperty}}
+    *
+    **/
+      
+    /**
+    * This `equals-sign-pressed` event is triggered, as its' name suggests, when the equals sign button is pressed on the pad.
+    *
+    * @event equals-sign-pressed
+    * @detail {{detail: eventDetails, value: _temporalValueProperty}}
+    */
+    
+    /**
+    * Function that opens the dialog calculator
+    */
+    openCalculator: function(){
+        this.$.calculator.open();
+        return true;
+    },
+      
+    /**
+    * Function that combines the temporal value with the command pressed into a readable String.
+    */
+      
+    _labelView: function(a,b){
+        return a + " " + b;
+    },
+     
+      
+    /**
+    * Function saves the clicked number to the new value string.
+    */
+      
+    _numberPressed : function(event){
+        var regEx = /(\r\n|\n|\r|\s)/gm;
+        if(this._newValue === '' && event.target.outerText !== '.' && this._temporalValue === 0){
+            this._newValue = event.target.outerText.replace(regEx,"");
+        } else if (this._newValue === '' && event.target.outerText !== '.' && this._temporalValue !== 0 && this._commandPresent === ''){
+            this._newValue = event.target.outerText.replace(regEx,"");
+            this._temporalValue = 0;
+        } else if (event.target.outerText !== '.'){
+            this._newValue += event.target.outerText.replace(regEx,"");
+        } else if (event.target.outerText === '.'){
+            if(!this._dotPresent){
+                this._newValue += event.target.outerText.replace(regEx,"");
+                this._dotPresent = true;
+            }
+        }
+        this.fire('number-pressed',{detail: event.detail, newValue: this._newValue});
+        
+    }, 
+      
+    /**
+    * This function registers the pressing of a certain command and prepares the calculator for the next number to 
+    * be introduced.
+    */
+    _commandPressed: function(event){
+        var regEx = /(\r\n|\n|\r|\s)/gm;
+        switch(event.target.outerText.replace(regEx,"")){
+            case '+':
+                if(this._newValue !== '' && this._temporalValue === 0){
+                    this._commandPresent = event.target.outerText;
+                    this._temporalValue = parseFloat(this._newValue.replace(regEx,""));
+                    this._newValue = '';
+                    this._dotPresent = false;
+                } else if (this._commandPresent !== '' && this._newValue !== ''){
+                    this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
+                    this._refreshPanel(this._sumaTemp, event.target.outerText);
+                } else {
+                    this._commandPresent = event.target.outerText;
+                }
+                break;
+            case '-':
+                if(this._newValue !== '' && this._temporalValue === 0){
+                    this._commandPresent = event.target.outerText;
+                    this._temporalValue = parseFloat(this._newValue.replace(regEx,""));
+                    this._newValue = '';
+                    this._dotPresent = false;
+                } else if (this._commandPresent !== '' && this._newValue !== ''){
+                    this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
+                    this._refreshPanel(this._sumaTemp, event.target.outerText);
+                } else {
+                    this._commandPresent = event.target.outerText;
+                }
+                break;
+            case '*':
+                if(this._newValue !== '' && this._temporalValue === 0){
+                    this._commandPresent = event.target.outerText;
+                    this._temporalValue = parseFloat(this._newValue.replace(regEx,""));
+                    this._newValue = '';
+                    this._dotPresent = false;
+                } else if (this._commandPresent !== '' && this._newValue !== ''){
+                    this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
+                    this._refreshPanel(this._sumaTemp, event.target.outerText);
+                } else {
+                    this._commandPresent = event.target.outerText;
+                }
+                break;
+            case '/':
+                if(this._newValue !== '' && this._temporalValue === 0){
+                    this._commandPresent = event.target.outerText;
+                    this._temporalValue = parseFloat(this._newValue.replace(regEx,""));
+                    this._newValue = '';
+                    this._dotPresent = false;
+                } else if (this._commandPresent !== '' && this._newValue !== ''){
+                    this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
+                    this._refreshPanel(this._sumaTemp, event.target.outerText);
+                } else {
+                    this._commandPresent = event.target.outerText;
+                }
+                break;
+        }
+    },
+    /**
+    * Evaluates a given operation with the values currently saved as new and temporal. This is: the latests input 
+    * is evaluated with the expected command against the temporally saved value.
+    *
+    * nuevo @param Latest value input
+    *
+    * temporal @param Temporally saved value (intermediate result)
+    *
+    * commando @param Command expected to be run
+    */
+    _evaluacionPrevia: function(nuevo, temporal, commando){
+        switch(commando.replace(/(\r\n|\n|\r|\s)/gm,"")){
+            case '+':
+                var tempA = parseFloat(nuevo);
+                return tempA + temporal;
+                break;
+            case '-':
+                var tempA = parseFloat(nuevo);
+                return temporal - tempA;
+                break;
+            case '*':
+                var tempA = parseFloat(nuevo);
+                return tempA*temporal;
+                break;
+            case '/':
+                var tempA = parseFloat(nuevo);
+                return temporal/tempA;
+                break;
+        }
+    },
+      
+    /**
+    * Converts the final wanted value into a String.
+    *
+    * nuevo @param Latest value input
+    *
+    * temporal @param Temporally saved value (intermediate result)
+    *
+    * commando @param Command expected to be run
+    *
+    * trigger @param Boolean used to enter or not the calculation Switch
+    */
+    _evaluacionEqualsString: function(nuevo, temporal, commando, trigger){
+        if(trigger){
+            switch(commando.replace(/(\r\n|\n|\r|\s)/gm,"")){
+                case '+':
+                    var tempA = parseFloat(nuevo);
+                    var tempNum = tempA + temporal;
+                    tempNum += '';
+                    return tempNum;
+                    break;
+                case '-':
+                    var tempA = parseFloat(nuevo);
+                    var tempNum = temporal - tempA;
+                    tempNum += '';
+                    return tempNum;
+                    break;
+                case '*':
+                    var tempA = parseFloat(nuevo);
+                    var tempNum = tempA*temporal;
+                    tempNum += '';
+                    return tempNum;
+                    break;
+                case '/':
+                    var tempA = parseFloat(nuevo);
+                    var tempNum = temporal/tempA;
+                    tempNum += '';
+                    return tempNum;
+                    break;
+            }
+        } else {
+            var emptyString = '';
+            return emptyString;
+        }
+    },
+      
+    
+    /**
+    * Refresh the panel between chained commands.
+    */
+    _refreshPanel: function (_sumaTemp, eventInfo) {
+                    this._newValue = '';
+                    this._temporalValue = _sumaTemp;
+                    this._commandPresent = eventInfo;
+                    this._dotPresent = false;
+    },
+    /**
+    * Calculate a final result.
+    */ 
+    _commandResult: function(event) {
+        if(this._newValue !== ''){
+            this._stringTrigger = true;
+            this._sumaTemp = this._evaluacionPrevia(this._newValue, this._temporalValue, this._commandPresent);
+            this.fire('equals-sign-pressed', {value: this._temporalValueString, detail: event.detail});
+            this._newValue = '';
+            this._temporalValue = this._sumaTemp;
+            this._temporalValueString = typeof this._newValue;
+            this._dotPresent = false;
+            this._commandPresent = '';
+            this._stringTrigger = false;
+        }
+    },
+    /**
+    * Clear calculator
+    */
+    _clearAll: function(){
+        this._newValue = '';
+        this._temporalValue = 0;
+        this._commandPresent = '';
+        this._dotPresent = false;
+    },
+    /**
+    * Clear _newValue and _commandPresent
+    */
+    _clearCurrent: function() {
+        this._newValue = '';
+        this._commandPresent = '';
+    },
+    /**
+    * Final confirmation. Closes the dialog and passes the final result to the notified property `final-value`
+    */  
+    _confirmValue: function(event) {
+        this._commandResult(event);
+        this.finalValue = Math.round(this._temporalValue * 100) / 100;
+        this._newValue = '';
+        this._dotPresent = false;
+        this._commandPresent = '';
+    },
+      
+  });
+
+</script>
