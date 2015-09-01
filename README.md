@@ -16,6 +16,8 @@ Example:
 
 Visit http://nickBor.github.io/fbv-calculator-modal to demo the element.
 
+You will find all the documentation provided for the element and a working demo of the element.
+
 ## Install with Bower
 
 Run:
